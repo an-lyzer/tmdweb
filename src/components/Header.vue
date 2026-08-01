@@ -62,7 +62,7 @@ onMounted(async () => {
     box-sizing: border-box;
     z-index: 100;
     background: transparent;
-    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: Montserrat, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .site-header__brand {
@@ -102,7 +102,7 @@ onMounted(async () => {
 }
 
 .site-header__link h5 {
-    font-size: 1.44rem;
+    
     font-weight: 400;
     line-height: 1;
     letter-spacing: -0.3px;
@@ -110,7 +110,7 @@ onMounted(async () => {
 }
 .site-header__link:hover h5 {
     transition: color 0.3s ease;
-    color: hwb(0 100% 0%);
+    color: var(--color-3);
 }
 
 .site-header__link--dropdown {
@@ -131,14 +131,14 @@ onMounted(async () => {
     height: 3.75rem;
     /* 60px */
     padding: 0 0;
-    background-color: hsl(204.09, 54.15%, 50.39%);
-    color: hsl(0, 0%, 100%);
+    background-color: var(--azul);
+    color: var(--blanco);
     cursor: pointer;
     transition: all 200ms ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: Montserrat, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     text-decoration: none;
 }
 

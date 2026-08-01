@@ -3,6 +3,12 @@ import { ref, onMounted } from 'vue'
 import { getHero } from '../services/strapi.ts'
 import pathlineasverdes from '../assets/pathlineasverdes.png'
 import LogosCarros from './logoscarros.vue'
+import Beneficios from './beneficios.vue'
+import ProcesoConversion from './procesoconversion.vue'
+import Servicios from './Servicios.vue'
+import Motores from './Motores.vue'
+import Marcas from './Marcas.vue'
+import Financiacion from './Financiacion.vue'
 
 const heroUrl = ref<string>('')
 const heroItemsUrl = ref<string>('')
@@ -40,6 +46,12 @@ onMounted(async () => {
         </div>
         <div class="content">
             <LogosCarros />
+            <Beneficios />
+            <ProcesoConversion />
+            <Servicios />
+            <Motores />
+            <Marcas />
+            <Financiacion />
         </div>
     
     </section>
@@ -68,8 +80,8 @@ onMounted(async () => {
 .hero-item {
     position: absolute;
     inset: 0;
-    width: 85%;
-    height: 85%;
+    width: 88%;
+    height: 88%;
     object-fit: contain;
     z-index: 3;
     pointer-events: none;

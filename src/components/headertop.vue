@@ -44,6 +44,7 @@ import whatsappIcon from '../assets/whatsapplogo.png'
   align-items: center;
   background: var(--blanco);
   color: var(--negro);
+  font-family: Montserrat, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   z-index: 200;
 }
 
