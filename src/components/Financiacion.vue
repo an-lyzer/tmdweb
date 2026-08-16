@@ -57,7 +57,7 @@ import calidda from '../assets/calidda.png'
   row-gap: 10rem;
   max-width: 112rem;
   margin: 0 auto;
-  padding: clamp(4rem, 7vw, 7rem) 7rem;
+  padding: clamp(4rem, 7vw, 7rem) 7rem 0;
 }
 
 .financiacion__intro {
@@ -98,7 +98,7 @@ import calidda from '../assets/calidda.png'
   display: block;
   width: auto;
   max-width: 50%;
-  height: clamp(3.5rem, 5vw, 4.75rem);
+  height: 3.75rem;
   padding: 0.35rem 0.5rem;
   border-radius: 1rem;
   background: var(--blanco);
@@ -113,7 +113,7 @@ import calidda from '../assets/calidda.png'
   align-content: center;
   box-sizing: border-box;
   width: 100%;
-  height: 22.5rem;
+  height: 28rem;
   padding: clamp(2rem, 4vw, 4.5rem);
   border-radius: 1.5rem;
   background: var(--blanco);
@@ -165,6 +165,7 @@ import calidda from '../assets/calidda.png'
 
 .financiacion__card--tres {
   grid-column: 2;
+  border-radius: 1.5rem 1.5rem 0 0;
 }
 
 @media (max-width: 900px) {

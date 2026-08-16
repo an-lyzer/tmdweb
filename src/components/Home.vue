@@ -9,6 +9,8 @@ import Servicios from './Servicios.vue'
 import Motores from './Motores.vue'
 import Marcas from './Marcas.vue'
 import Financiacion from './Financiacion.vue'
+import Galeria from './Galeria.vue'
+import FormContacto from './formcontacto.vue'
 
 const heroUrl = ref<string>('')
 const heroItemsUrl = ref<string>('')
@@ -52,6 +54,8 @@ onMounted(async () => {
             <Motores />
             <Marcas />
             <Financiacion />
+            <Galeria />
+            <FormContacto />
         </div>
     
     </section>

@@ -27,22 +27,22 @@ onMounted(async () => {
 
         <nav class="site-header__nav" aria-label="Navegación principal">
             <RouterLink class="site-header__link" to="/">
-                <h5>Inicio</h5>
+                <h6>Inicio</h6>
             </RouterLink>
-            <RouterLink class="site-header__link site-header__link--dropdown" to="/servicios">
-                <h5>Servicios</h5>
+            <RouterLink class="site-header__link" to="/servicios">
+                <h6>Servicios</h6>
                 
             </RouterLink>
             <RouterLink class="site-header__link" to="/nosotros">
-                <h5>Nosotros</h5>
+                <h6>Nosotros</h6>
             </RouterLink>
             <RouterLink class="site-header__link" to="/blog">
-                <h5>Blog</h5>
+                <h6>Blog</h6>
             </RouterLink>
         </nav>
 
         <RouterLink class="buttonheader" to="/contacto">
-            <h4>Contáctanos</h4>
+            <h5>Asesoría gratuita</h5>
         </RouterLink>
     </header>
 </template>
@@ -53,12 +53,13 @@ onMounted(async () => {
     grid-template-columns: auto 1fr auto;
     align-items: center;
     position: absolute;
+    /* Coincide con la altura de la barra superior para alinear ambos headers. */
     top: 3.5rem;
     left: 0;
     right: 0;
     width: 100%;
     margin: 0;
-    padding: 1rem 7rem;
+    padding: 0.8rem 5.6rem;
     box-sizing: border-box;
     z-index: 100;
     background: transparent;
@@ -74,7 +75,7 @@ onMounted(async () => {
 
 .site-header__logo {
     display: block;
-    width: 6rem;
+    width: 4.8rem;
     height: auto;
     object-fit: contain;
 }
@@ -83,7 +84,7 @@ onMounted(async () => {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: clamp(2rem, 5vw, 3.5rem);
+    gap: clamp(1.6rem, 4vw, 2.8rem);
     flex-wrap: wrap;
 }
 
@@ -101,20 +102,20 @@ onMounted(async () => {
     opacity: 0.7;
 }
 
-.site-header__link h5 {
+.site-header__link h6 {
     
     font-weight: 400;
     line-height: 1;
     letter-spacing: -0.3px;
      
 }
-.site-header__link:hover h5 {
+.site-header__link:hover h6 {
     transition: color 0.3s ease;
     color: var(--color-3);
 }
 
 .site-header__link--dropdown {
-    padding-right: 0.2rem;
+    padding-right: 0.16rem;
 }
 
 .site-header__chevron {
@@ -125,10 +126,10 @@ onMounted(async () => {
 
 .buttonheader {
     border: 0;
-    border-radius: 0.8rem;
-    width: 14.8125rem;
+    border-radius: 0.64rem;
+    width: 13.45rem;
     /* 237px */
-    height: 3.75rem;
+    height: 3rem;
     /* 60px */
     padding: 0 0;
     background-color: var(--azul);
@@ -152,8 +153,8 @@ onMounted(async () => {
     transform: translateY(0);
 }
 
-.buttonheader h4 {
-    font-size: 1.728rem;
+.buttonheader h5 {
+    font-size: 1.3824rem;
     font-weight: 550;
     line-height: 1;
     letter-spacing: -0.3px;
@@ -164,28 +165,28 @@ onMounted(async () => {
 
 @media (max-width: 1024px) {
     .site-header {
-        gap: 2rem;
-        padding: 0.9rem 2.5rem;
+        gap: 1.6rem;
+        padding: 0.72rem 2rem;
     }
 
     .site-header__logo {
-        width: 5rem;
+        width: 4rem;
     }
 
     .site-header__nav {
-        gap: 2rem;
+        gap: 1.6rem;
     }
 }
 
 @media (max-width: 768px) {
     .site-header {
         grid-template-columns: auto 1fr auto;
-        gap: 1.5rem;
-        padding: 0.8rem 1.5rem;
+        gap: 1.2rem;
+        padding: 0.64rem 1.2rem;
     }
 
     .site-header__nav {
-        gap: 1.5rem;
+        gap: 1.2rem;
     }
 
     .site-header__link h6 {
@@ -193,7 +194,7 @@ onMounted(async () => {
     }
 
     .site-header__logo {
-        width: 4.5rem;
+        width: 3.6rem;
     }
 }
 
@@ -207,13 +208,14 @@ onMounted(async () => {
 @media (max-width: 600px) {
     .site-header {
         grid-template-columns: 1fr;
-        gap: 1rem;
-        padding: 1rem;
+        gap: 0.8rem;
+        padding: 0.8rem;
+        text-align: center;
     }
 
     .site-header__nav {
         order: 3;
-        gap: 1.2rem;
+        gap: 0.96rem;
     }
 
     .site-header__cta {
@@ -221,16 +223,20 @@ onMounted(async () => {
         width: 100%;
     }
 
+    .buttonheader {
+        order: 2;
+    }
+
     .site-header__logo {
-        width: 4rem;
+        width: 3.2rem;
     }
 
     .site-header__link h6 {
         font-size: 0.9rem;
     }
 
-    .site-header__cta h5 {
-        font-size: 1rem;
+    .buttonheader h5 {
+        font-size: 0.8rem;
     }
 }
 </style>

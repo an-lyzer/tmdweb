@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import Header from './components/Header.vue'
 import HeaderWhite from './components/Header_white.vue'
 import HeaderTop from './components/headertop.vue'
+import Footer from './components/Footer.vue'
 
 const route = useRoute()
 const isHome = computed(() => route.name === 'home')
@@ -17,6 +18,7 @@ const isHome = computed(() => route.name === 'home')
     <main>
       <RouterView />
     </main>
+    <Footer />
   </div>
 </template>
 

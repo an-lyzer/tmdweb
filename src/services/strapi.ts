@@ -30,3 +30,28 @@ export async function getHero() {
     };
 
 }
+
+export async function getContactpage() {
+
+    const response = await fetch(`${API}/contactopages?populate=*`);
+
+    if (!response.ok) {
+        throw new Error("Error al obtener contactform");
+    }
+
+    const data = await response.json();
+    const contactform = data.data[0];
+    const imagenes = contactform?.contactform ?? [];
+    const carroRojoPartido = imagenes.find((imagen: { name?: string }) =>
+        imagen.name === 'carro_rojo_partido.png'
+    );
+    const fondoCarroRojo = imagenes.find((imagen: { name?: string }) =>
+        imagen.name === 'fondo_carro_rojo.png'
+    );
+
+    return {
+        carroRojoPartido: carroRojoPartido?.url ?? null,
+        fondoCarroRojo: fondoCarroRojo?.url ?? null,
+    };
+
+}
