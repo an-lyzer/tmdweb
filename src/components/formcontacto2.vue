@@ -1,26 +1,57 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { getContactpage, getLogos } from '../services/strapi.ts'
+import { crearFormularioContacto, getContactpage, getLogos, getStrapiAssetUrl } from '../services/strapi.ts'
+import SolicitudConfirmacion from './SolicitudConfirmacion.vue'
 
 const logoUrl = ref('')
 const carroRojoPartidoUrl = ref('')
 const fondoCarroRojoUrl = ref('')
 const enviado = ref(false)
+const cargando = ref(false)
+const errorEnvio = ref('')
 
 onMounted(async () => {
   try {
     const [logo, contactform] = await Promise.all([getLogos(), getContactpage()])
 
-    if (logo) logoUrl.value = `http://localhost:1337${logo}`
-    if (contactform.carroRojoPartido) carroRojoPartidoUrl.value = `http://localhost:1337${contactform.carroRojoPartido}`
-    if (contactform.fondoCarroRojo) fondoCarroRojoUrl.value = `http://localhost:1337${contactform.fondoCarroRojo}`
+    if (logo) logoUrl.value = getStrapiAssetUrl(logo)
+    if (contactform.carroRojoPartido) carroRojoPartidoUrl.value = getStrapiAssetUrl(contactform.carroRojoPartido)
+    if (contactform.fondoCarroRojo) fondoCarroRojoUrl.value = getStrapiAssetUrl(contactform.fondoCarroRojo)
   } catch (error) {
     console.error(error)
   }
 })
 
-function enviarFormulario() {
-  enviado.value = true
+async function enviarFormulario(event: SubmitEvent) {
+  const formulario = event.currentTarget
+  if (!(formulario instanceof HTMLFormElement)) return
+
+  enviado.value = false
+  errorEnvio.value = ''
+
+  const datos = new FormData(formulario)
+  const telefono = String(datos.get('telefono') ?? '').trim()
+
+  if (telefono.replace(/\D/g, '').length < 9) {
+    errorEnvio.value = 'El número de teléfono debe tener al menos 9 dígitos.'
+    return
+  }
+
+  cargando.value = true
+  try {
+    await crearFormularioContacto({
+      Nombre: String(datos.get('nombre') ?? '').trim(),
+      correo: String(datos.get('correo') ?? '').trim(),
+      Telefono: telefono,
+      Numeroplaca: String(datos.get('placa') ?? '').trim() || null,
+    })
+    formulario.reset()
+    enviado.value = true
+  } catch (error) {
+    errorEnvio.value = error instanceof Error ? error.message : 'No se pudo enviar la solicitud.'
+  } finally {
+    cargando.value = false
+  }
 }
 </script>
 
@@ -32,7 +63,6 @@ function enviarFormulario() {
       :style="fondoCarroRojoUrl ? { backgroundImage: `url(${fondoCarroRojoUrl})` } : undefined"
       aria-hidden="true"
     >
-      <span v-if="!fondoCarroRojoUrl">Imagen de fondo próximamente</span>
     </div>
 
     <div class="formcontacto2__tarjeta">
@@ -47,18 +77,18 @@ function enviarFormulario() {
         <form @submit.prevent="enviarFormulario">
           <label>Nombre*<input name="nombre" type="text" placeholder="Ingresa tu nombre" required autocomplete="name" /></label>
           <label>Correo*<input name="correo" type="email" placeholder="Ingresa tu correo" required autocomplete="email" /></label>
-          <label>Teléfono*<input name="telefono" type="tel" placeholder="Ingresa tu teléfono" required autocomplete="tel" /></label>
+          <label>Teléfono*<input name="telefono" type="tel" placeholder="Ingresa tu teléfono" required autocomplete="tel" inputmode="numeric" minlength="9" /></label>
           <label>Nro de placa<input name="placa" type="text" placeholder="Ingresa la placa del vehículo a convertir" /></label>
-          <button type="submit">Enviar</button>
-          <p v-if="enviado" class="formcontacto2__mensaje" role="status">Recibimos tu solicitud. Pronto te contactaremos.</p>
+          <button type="submit" :disabled="cargando">{{ cargando ? 'Enviando...' : 'Enviar' }}</button>
+          <p v-if="errorEnvio" class="formcontacto2__mensaje formcontacto2__mensaje--error" role="alert">{{ errorEnvio }}</p>
         </form>
       </div>
 
       <div class="formcontacto2__imagen">
         <img v-if="carroRojoPartidoUrl" :src="carroRojoPartidoUrl" alt="Bus convertido por TMD Gas" />
-        <span v-else aria-hidden="true">Imagen de vehículo próximamente</span>
       </div>
     </div>
+    <SolicitudConfirmacion v-if="enviado" @cerrar="enviado = false" />
   </section>
 </template>
 
@@ -184,6 +214,8 @@ function enviarFormulario() {
 
 .formcontacto2 button:hover { background: var(--color-2); }
 .formcontacto2__mensaje { margin: 0; color: #537c21; font-size: 0.95rem; }
+.formcontacto2__mensaje--error { color: #b42318; }
+.formcontacto2 button:disabled { cursor: wait; opacity: 0.7; }
 
 .formcontacto2__imagen {
   display: grid;
@@ -208,12 +240,15 @@ function enviarFormulario() {
 @media (max-width: 1050px) {
   .formcontacto2 {
     height: auto;
+    min-height: 0;
     padding: 4rem 2rem;
   }
 
   .formcontacto2__tarjeta {
     height: auto;
+    min-height: 0;
     grid-template-columns: 1fr;
+    gap: 3rem;
   }
 
   .formcontacto2__formulario { max-width: none; }
@@ -221,8 +256,45 @@ function enviarFormulario() {
 }
 
 @media (max-width: 560px) {
-  .formcontacto2 { padding-inline: 1rem; }
-  .formcontacto2__tarjeta { padding: 2rem 1.25rem; }
-  .formcontacto2__imagen { min-height: 20rem; }
+  .formcontacto2 {
+    padding: 2.5rem 0.75rem;
+  }
+
+  .formcontacto2__tarjeta {
+    gap: 2rem;
+    padding: 2rem 1.1rem 1.1rem;
+    border-radius: 1.25rem;
+  }
+
+  .formcontacto2__logo {
+    width: 2.5rem;
+  }
+
+  .formcontacto2 h2 {
+    font-size: clamp(2rem, 10vw, 2.75rem);
+  }
+
+  .formcontacto2__formulario > p {
+    margin: 1.25rem 0 1.75rem;
+    font-size: 0.95rem;
+  }
+
+  .formcontacto2 form {
+    gap: 1rem;
+  }
+
+  .formcontacto2 input,
+  .formcontacto2 button {
+    height: 3.5rem;
+  }
+
+  .formcontacto2 button {
+    font-size: 1.1rem;
+  }
+
+  .formcontacto2__imagen {
+    min-height: 16rem;
+    aspect-ratio: 1.15 / 1;
+  }
 }
 </style>

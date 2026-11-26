@@ -1,0 +1,16 @@
+# Permite abrir y refrescar las rutas de Vue Router en SiteGround.
+<IfModule mod_negotiation.c>
+  Options -MultiViews
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Sirve los archivos y directorios existentes normalmente.
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Carga la aplicacion para las paginas del sitio, incluidos los articulos.
+  RewriteRule ^(?:servicios|nosotros|contacto|terminos-de-servicio|legal|politica-de-privacidad|blog(?:/[^/]+)?)/?$ index.html [L]
+</IfModule>

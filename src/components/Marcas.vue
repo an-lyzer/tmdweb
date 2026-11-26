@@ -1,17 +1,31 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { getHome, getStrapiAssetUrl } from '../services/strapi.ts'
+
 const marcas = [
-  { nombre: 'Transportes Huascar', imagen: '' },
-  { nombre: 'Cruz del Sur', imagen: '' },
-  { nombre: 'Transporte Martínez', imagen: '' },
-  { nombre: 'Va y Ven', imagen: '' },
-  { nombre: 'ETS Salvador', imagen: '' },
-  { nombre: 'Villarrica Tours', imagen: '' },
-  { nombre: 'Etuchisa', imagen: '' },
-  { nombre: 'ZBUSS', imagen: '' },
-  { nombre: 'El Rápido', imagen: '' },
-  { nombre: 'Confort Travel', imagen: '' },
-  { nombre: 'Vipusa', imagen: '' },
+  { nombre: 'Transportes Huascar' },
+  { nombre: 'Cruz del Sur' },
+  { nombre: 'Transporte Martínez' },
+  { nombre: 'Va y Ven' },
+  { nombre: 'ETS Salvador' },
+  { nombre: 'Villarrica Tours' },
+  { nombre: 'Etuchisa' },
+  { nombre: 'ZBUSS' },
+  { nombre: 'El Rápido' },
+  { nombre: 'Confort Travel' },
+  { nombre: 'Vipusa' },
 ]
+
+const imagenesMarcas = ref<string[]>([])
+
+onMounted(async () => {
+  try {
+    const home = await getHome('u98yq7h5klflg2qhaiyv6j8y')
+    imagenesMarcas.value = home.marcas.map(getStrapiAssetUrl)
+  } catch (error) {
+    console.error(error)
+  }
+})
 </script>
 
 <template>
@@ -27,8 +41,8 @@ const marcas = [
     </header>
 
     <div class="marcas__grid" aria-label="Empresas clientes">
-      <div v-for="marca in marcas" :key="marca.nombre" class="marcas__logo">
-        <img v-if="marca.imagen" :src="marca.imagen" :alt="`Logo ${marca.nombre}`" />
+      <div v-for="(marca, index) in marcas" :key="marca.nombre" class="marcas__logo">
+        <img v-if="imagenesMarcas[index]" :src="imagenesMarcas[index]" :alt="`Logo ${marca.nombre}`" loading="lazy" decoding="async" />
         <span v-else>{{ marca.nombre }}</span>
       </div>
     </div>
@@ -66,14 +80,15 @@ const marcas = [
 
 .marcas__grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  column-gap: clamp(1rem, 4vw, 5rem);
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  column-gap: 0;
   row-gap: clamp(2rem, 4.5vw, 5rem);
   align-items: center;
 }
 
 .marcas__logo {
   display: grid;
+  grid-column: span 4;
   min-width: 0;
   min-height: clamp(3.5rem, 6vw, 5.5rem);
   place-items: center;
@@ -81,6 +96,19 @@ const marcas = [
   font-size: clamp(0.85rem, 1.25vw, 1.2rem);
   font-weight: 600;
   text-align: center;
+}
+
+/* La última fila ocupa doce de dieciséis columnas y queda centrada. */
+.marcas__logo:nth-child(9) {
+  grid-column: 3 / span 4;
+}
+
+.marcas__logo:nth-child(10) {
+  grid-column: 7 / span 4;
+}
+
+.marcas__logo:nth-child(11) {
+  grid-column: 11 / span 4;
 }
 
 .marcas__logo img {
@@ -98,6 +126,14 @@ const marcas = [
 
   .marcas__grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: clamp(1rem, 4vw, 5rem);
+  }
+
+  .marcas__logo,
+  .marcas__logo:nth-child(9),
+  .marcas__logo:nth-child(10),
+  .marcas__logo:nth-child(11) {
+    grid-column: auto;
   }
 }
 

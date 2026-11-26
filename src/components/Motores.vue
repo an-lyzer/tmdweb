@@ -1,38 +1,69 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { getHome, getStrapiAssetUrl } from '../services/strapi.ts'
 
 
+// Índices originales de las imágenes en Strapi; se conserva el hueco del motor retirado.
 const motores = [
   {
-    nombre: 'Weichai WP5NG200',
+    nombre: 'Weichai WP4.6NNG200E-52',
+    imagenIndex: 0,
     detalles: ['Euro 5', 'Motor Delantero', '4 cilindros', '200 HP', 'Bus y Camión'],
-    imagen: '',
   },
   {
     nombre: 'Weichai WP7NG240',
+    imagenIndex: 1,
     detalles: ['Euro 5', 'Motor Delantero', '6 cilindros', '240 HP', 'Bus y Camión'],
-    imagen: '',
   },
   {
     nombre: 'Yuchai YC6G230N-50',
+    imagenIndex: 2,
     detalles: ['Euro 5', 'Motor Delantero', '6 cilindros', '230 HP', 'Bus y Camión'],
-    imagen: '',
   },
   {
-    nombre: 'Yuchai YC6G230N-50',
-    detalles: ['Euro 5', 'Motor Delantero', '6 cilindros', '230 HP', 'Bus y Camión'],
-    imagen: '',
-  },
-  {
-    nombre: 'Yuchai YC4D140N-50',
-    detalles: ['Euro 5', '4 cilindros', '140 HP', 'Hasta 10T', 'Bus y Camión'],
-    imagen: '',
+    nombre: 'Yuchai YC6MK375N-50',
+    imagenIndex: 3,
+    detalles: ['Euro 5', 'Motor Delantero', '6 cilindros', '375 HP', 'Bus de Transporte personal'],
   },
   {
     nombre: 'Weichai WP13NG430E52',
+    imagenIndex: 5,
     detalles: ['Euro 5', 'Motor Delantero', '4 cilindros', '200 HP', 'Bus y Camión'],
-    imagen: '',
+  },
+  {
+    nombre: 'Yuchai YC6L280N-50',
+    imagenIndex: 6,
+    detalles: [
+      'Euro 5',
+      'Motor Delantero',
+      '6 cilindros',
+      '280 HP',
+      'Camión Mercedes e Iveco',
+    ],
+  },
+  {
+    nombre: 'Yuchai YC4G180/190N-50',
+    imagenIndex: 7,
+    detalles: [
+      'Euro 5',
+      'Motor Delantero',
+      '6 cilindros',
+      '280 HP',          
+      'Camión',
+    ],
   },
 ]
+
+const imagenesMotores = ref<string[]>([])
+
+onMounted(async () => {
+  try {
+    const home = await getHome('u98yq7h5klflg2qhaiyv6j8y')
+    imagenesMotores.value = home.motores.map(getStrapiAssetUrl)
+  } catch (error) {
+    console.error(error)
+  }
+})
 </script>
 
 <template>
@@ -49,10 +80,9 @@ const motores = [
     </header>
 
     <div class="motores__grid">
-      <article v-for="(motor, index) in motores" :key="`${motor.nombre}-${index}`" class="motores__item">
+      <article v-for="motor in motores" :key="motor.nombre" class="motores__item">
         <div class="motores__media">
-          <img v-if="motor.imagen" :src="motor.imagen" :alt="motor.nombre" />
-          <span v-else aria-hidden="true">Imagen del motor próximamente</span>
+          <img v-if="imagenesMotores[motor.imagenIndex]" :src="imagenesMotores[motor.imagenIndex]" :alt="motor.nombre" loading="lazy" decoding="async" />
         </div>
         <div class="motores__detalle">
           <h3>{{ motor.nombre }}</h3>
@@ -69,7 +99,7 @@ const motores = [
 .motores {
   max-width: 112rem;
   margin: 0 auto;
-  padding: clamp(1rem, 2vw, 2rem) 7rem;
+  padding: clamp(1rem, 2vw, 2rem) clamp(1.5rem, 5.5vw, 7rem);
   color: #363835;
 }
 
@@ -128,17 +158,21 @@ const motores = [
 
 .motores__item {
   display: grid;
-  grid-template-columns: minmax(10rem, 0.85fr) minmax(12rem, 1fr);
+  min-width: 0;
+  grid-template-columns: minmax(10rem, 16.625rem) minmax(0, 1fr);
   gap: clamp(1rem, 2.5vw, 2.5rem);
   align-items: center;
 }
 
 .motores__media {
   display: grid;
+  width: 100%;
+  max-width: 16.625rem; /* 266 px */
   aspect-ratio: 1 / 0.85;
+  justify-self: center;
   place-items: center;
   overflow: hidden;
-  background: linear-gradient(135deg, #f2f4ef, #d7e2cb);
+  background: transparent;
   color: #6b8660;
   font-size: 0.8rem;
   text-align: center;
@@ -147,7 +181,11 @@ const motores = [
 .motores__media img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+}
+
+.motores__detalle {
+  min-width: 0;
 }
 
 .motores__detalle h3 {
@@ -157,6 +195,7 @@ const motores = [
   font-style: italic;
   font-weight: 700;
   line-height: 1.15;
+  overflow-wrap: anywhere;
 }
 
 .motores__detalle ul {
@@ -172,17 +211,50 @@ const motores = [
   }
 }
 
-@media (max-width: 720px) {
-  .motores {
-    padding-inline: 2rem;
-  }
-
+@media (max-width: 1180px) {
   .motores__grid {
+    max-width: 54rem;
+    margin: 0 auto;
     grid-template-columns: 1fr;
   }
 
   .motores__item {
-    grid-template-columns: minmax(8rem, 0.8fr) minmax(11rem, 1fr);
+    grid-template-columns: 16.625rem minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .motores {
+    padding-inline: 2rem;
+  }
+}
+
+@media (max-width: 620px) {
+  .motores__header {
+    margin-bottom: 2.25rem;
+  }
+
+  .motores__marcas {
+    flex-wrap: wrap;
+  }
+
+  .motores__item {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .motores__media {
+    width: min(100%, 16.625rem);
+    margin: 0 auto;
+  }
+
+  .motores__detalle {
+    text-align: center;
+  }
+
+  .motores__detalle ul {
+    display: inline-block;
+    text-align: left;
   }
 }
 
@@ -195,13 +267,6 @@ const motores = [
     gap: 1rem;
   }
 
-  .motores__item {
-    grid-template-columns: 1fr;
-  }
-
-  .motores__media {
-    width: min(100%, 20rem);
-    margin: 0 auto;
-  }
+  .motores__header h2 { font-size: 2rem; }
 }
 </style>

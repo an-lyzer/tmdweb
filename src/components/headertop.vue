@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import facebookIcon from '../assets/facebook.png'
-import gpsIcon from '../assets/gps.png'
-import linkedinIcon from '../assets/linkedin.png'
-import mailIcon from '../assets/mail.png'
-import phoneIcon from '../assets/phone.png'
-import tiktokIcon from '../assets/tiktok.png'
-import whatsappIcon from '../assets/whatsapplogo.png'
+import facebookIcon from '../assets/facebook.webp'
+import gpsIcon from '../assets/gps.webp'
+import linkedinIcon from '../assets/linkedin.webp'
+import mailIcon from '../assets/mail.webp'
+import phoneIcon from '../assets/phone.webp'
+import tiktokIcon from '../assets/tiktok.webp'
+import whatsappIcon from '../assets/whatsapplogo.webp'
 </script>
 
 <template>
@@ -16,21 +16,21 @@ import whatsappIcon from '../assets/whatsapplogo.png'
           <img :src="gpsIcon" alt="" aria-hidden="true" />
           <span>Av. Evitamiento 1980 - Ate - Lima</span>
         </a>
-        <a class="header-top__item" href="tel:+51923573697">
+        <a class="header-top__item" href="tel:+51934215417">
           <img :src="phoneIcon" alt="" aria-hidden="true" />
-          <span>+51 923 573 697</span>
+          <span>+51 934 215 417</span>
         </a>
-        <a class="header-top__item" href="mailto:ventas@tmd.com">
+        <!-- <a class="header-top__item" href="mailto:ventas@tmd.com">
           <img :src="mailIcon" alt="" aria-hidden="true" />
           <span>ventas@tmd.com</span>
-        </a>
+        </a> -->
       </address>
 
       <nav class="header-top__social" aria-label="Redes sociales">
-        <a href="#" aria-label="TikTok"><img :src="tiktokIcon" alt="" /></a>
-        <a href="#" aria-label="Facebook"><img :src="facebookIcon" alt="" /></a>
-        <a href="#" aria-label="LinkedIn"><img :src="linkedinIcon" alt="" /></a>
-        <a href="#" aria-label="WhatsApp"><img :src="whatsappIcon" alt="" /></a>
+        <a href="https://www.tiktok.com/@tmdgas_peru?is_from_webapp=1&sender_device=pc" aria-label="TikTok" target="_blank" rel="noopener noreferrer"><img :src="tiktokIcon" alt="" /></a>
+        <a href="https://www.facebook.com/share/1DjgtZ2Y99/?mibextid=wwXIfr" aria-label="Facebook" target="_blank" rel="noopener noreferrer"><img :src="facebookIcon" alt="" /></a>
+        <a href="https://www.linkedin.com/company/tmd-gas/" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer"><img :src="linkedinIcon" alt="" /></a>
+        <a href="https://wa.me/51934215417" aria-label="WhatsApp" target="_blank" rel="noopener noreferrer"><img :src="whatsappIcon" alt="" /></a>
       </nav>
     </div>
   </aside>
@@ -115,15 +115,45 @@ import whatsappIcon from '../assets/whatsapplogo.png'
   }
 }
 
-@media (max-width: 680px) {
+@media (max-width: 768px) {
+  .header-top {
+    display: flex;
+    min-height: 2.65rem;
+  }
+
   .header-top__content {
-    flex-direction: column;
+    padding: 0.4rem 1rem;
+    flex-direction: row;
     gap: 0.75rem;
   }
 
   .header-top__contact {
-    flex-wrap: wrap;
-    justify-content: center;
+    min-width: 0;
+    gap: 0;
+  }
+
+  .header-top__item:first-child,
+  .header-top__item:nth-child(3) {
+    display: none;
+  }
+
+  .header-top__item {
+    gap: 0.35rem;
+    font-size: 0.78rem;
+  }
+
+  .header-top__item img {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .header-top__social {
+    gap: 0.55rem;
+  }
+
+  .header-top__social img {
+    width: 1.1rem;
+    height: 1.1rem;
   }
 }
 </style>

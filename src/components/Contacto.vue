@@ -1,19 +1,30 @@
 <script setup lang="ts">
-import phone from '../assets/phone.png'
-import mail from '../assets/mail.png'
-import gps from '../assets/gps.png'
-import motor1 from '../assets/motor1.PNG'
-import logobus from '../assets/buslogo.png'
+import { onMounted, ref } from 'vue'
+import phone from '../assets/phone.webp'
+import mail from '../assets/mail.webp'
+import gps from '../assets/gps.webp'
+import logobus from '../assets/buslogo.webp'
 import FormContacto2 from './formcontacto2.vue'
 import MapaLocacion from './mapalocacion.vue'
 import Siguenos from './siguenos.vue'
+import { getContactHeroImages } from '../services/strapi.ts'
 
 const fotos = [
-  { clase: 'contacto__foto--motor-azul', imagen: motor1, alt: 'Motor para conversión a GNV' },
-  { clase: 'contacto__foto--camion', imagen: '', alt: 'Camión en taller TMD Gas' },
-  { clase: 'contacto__foto--tanques', imagen: '', alt: 'Tanques de GNV' },
-  { clase: 'contacto__foto--taller', imagen: '', alt: 'Conversión de buses en taller' },
+  { clase: 'contacto__foto--motor-azul', alt: 'Motor para conversión a GNV' },
+  { clase: 'contacto__foto--camion', alt: 'Camión en taller TMD Gas' },
+  { clase: 'contacto__foto--tanques', alt: 'Tanques de GNV' },
+  { clase: 'contacto__foto--taller', alt: 'Conversión de buses en taller' },
 ]
+
+const imagenesHeroContacto = ref<string[]>([])
+
+onMounted(async () => {
+  try {
+    imagenesHeroContacto.value = await getContactHeroImages()
+  } catch (error) {
+    console.error('No se pudieron cargar las imágenes del hero de contacto.', error)
+  }
+})
 </script>
 
 <template>
@@ -33,12 +44,12 @@ const fotos = [
         <div class="contacto__datos">
           <article class="contacto__dato">
             <img :src="phone" alt="" />
-            <div><h5>Teléfono</h5><p>Siempre atentos a tu llamada.</p><strong>+51 971030423</strong></div>
+            <div><h5>Teléfono</h5><p>Siempre atentos a tu llamada.</p><strong>+51 934 215 417</strong></div>
           </article>
-          <article class="contacto__dato">
+          <!-- <article class="contacto__dato">
             <img :src="mail" alt="" />
             <div><h5>Email</h5><p>Estamos a un correo de distancia.</p><strong>ventas@tmd.com</strong></div>
-          </article>
+          </article> -->
           <article class="contacto__dato">
             <img :src="gps" alt="" />
             <div><h5>Almacén locación</h5><p>Te esperamos en nuestras instalaciones.</p><strong>Av. Evitamiento 1980. Ate-Lima</strong></div>
@@ -51,9 +62,8 @@ const fotos = [
       </div>
 
       <div class="contacto__mosaico">
-        <figure v-for="foto in fotos" :key="foto.clase" class="contacto__foto" :class="foto.clase">
-          <img v-if="foto.imagen" :src="foto.imagen" :alt="foto.alt" />
-          <span v-else aria-hidden="true">Imagen próximamente</span>
+        <figure v-for="(foto, index) in fotos" :key="foto.clase" class="contacto__foto" :class="foto.clase">
+          <img v-if="imagenesHeroContacto[index]" :src="imagenesHeroContacto[index]" :alt="foto.alt" />
         </figure>
       </div>
     </div>
@@ -67,7 +77,7 @@ const fotos = [
 .contacto {
   max-width: 128rem;
   margin: 0 auto;
-  padding: clamp(2rem, 3vw, 3rem) 7rem clamp(2.5rem, 4vw, 4rem);
+  padding: clamp(2rem, 3vw, 3rem) clamp(1.5rem, 5.5vw, 7rem) clamp(2.5rem, 4vw, 4rem);
   color: #090909;
 }
 
@@ -91,7 +101,7 @@ const fotos = [
 .contacto h1 {
   max-width: 55rem;
   margin: 0;
-  font-size: 4rem;
+  font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 600;
   letter-spacing: 0.01em;
   line-height: 1.26;
@@ -244,7 +254,7 @@ const fotos = [
     display: grid;
     width: 100%;
     height: auto;
-    min-height: 40rem;
+    min-height: clamp(31rem, 62vw, 40rem);
     margin-bottom: 0;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: repeat(2, minmax(0, 1fr));
@@ -275,7 +285,60 @@ const fotos = [
 
 @media (max-width: 720px) {
   .contacto {
-    padding-inline: 2rem;
+    padding: 2rem 1.5rem 3rem;
+  }
+
+  .contacto__contenido {
+    gap: 2.5rem;
+  }
+
+  .contacto__eyebrow {
+    margin-bottom: 1.5rem;
+  }
+
+  .contacto h1 {
+    max-width: 12ch;
+    font-size: clamp(2.25rem, 10vw, 3.25rem);
+    line-height: 1.08;
+    overflow-wrap: anywhere;
+  }
+
+  .contacto__bus {
+    width: 2.5rem;
+    height: 3rem;
+  }
+
+  .contacto__descripcion {
+    margin-top: 1.75rem;
+    font-size: 1rem;
+  }
+
+  .contacto__datos {
+    gap: 2rem 1.25rem;
+    margin-top: 2.5rem;
+  }
+
+  .contacto__dato {
+    min-width: 0;
+  }
+
+  .contacto__dato h5 {
+    font-size: clamp(1.1rem, 4.5vw, var(--text-h5));
+  }
+
+  .contacto__dato p {
+    margin-top: 0.65rem;
+  }
+
+  .contacto__dato strong {
+    margin-top: 0.8rem;
+    font-size: 1rem;
+    overflow-wrap: anywhere;
+  }
+
+  .contacto__mosaico {
+    min-height: clamp(24rem, 110vw, 34rem);
+    gap: 0.65rem;
   }
 }
 
@@ -284,12 +347,33 @@ const fotos = [
     padding-inline: 1rem;
   }
 
-  .contacto__datos,
-  .contacto__mosaico {
+  .contacto__datos {
     grid-template-columns: 1fr;
   }
 
   .contacto__mosaico {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(8.5rem, 1fr));
+    min-height: clamp(20rem, 105vw, 29rem);
+  }
+
+  .contacto__foto,
+  .contacto__foto--motor-azul,
+  .contacto__foto--camion,
+  .contacto__foto--tanques,
+  .contacto__foto--taller {
+    grid-area: auto;
+    aspect-ratio: auto;
+  }
+}
+
+@media (max-width: 370px) {
+  .contacto h1 {
+    font-size: 2rem;
+  }
+
+  .contacto__mosaico {
+    grid-template-columns: 1fr;
     grid-template-rows: none;
     min-height: 0;
   }
@@ -299,8 +383,7 @@ const fotos = [
   .contacto__foto--camion,
   .contacto__foto--tanques,
   .contacto__foto--taller {
-    grid-area: auto;
-    aspect-ratio: 1.25 / 1;
+    aspect-ratio: 1.35 / 1;
   }
 }
 </style>

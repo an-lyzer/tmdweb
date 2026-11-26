@@ -26,7 +26,7 @@
 
 @media (max-width: 680px) {
   .mapa-locacion {
-    height: 24rem;
+    height: clamp(18rem, 75vw, 24rem);
   }
 }
 </style>

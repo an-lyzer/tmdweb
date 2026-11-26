@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import barraVerde from '../assets/logoscarros/barra_verde.png'
-import bmw from '../assets/logoscarros/bmw.png'
-import goldenDragon from '../assets/logoscarros/goldendragon.png'
-import iveco from '../assets/logoscarros/iveco.png'
-import man from '../assets/logoscarros/man.png'
-import mercedes from '../assets/logoscarros/mercedes.png'
-import volkswagen from '../assets/logoscarros/volkswagen.png'
-import volvo from '../assets/logoscarros/volvo.png'
-import yutong from '../assets/logoscarros/yutong.png'
+import barraVerde from '../assets/logoscarros/barra_verde.webp'
+import bmw from '../assets/logoscarros/bmw.webp'
+import goldenDragon from '../assets/logoscarros/goldendragon.webp'
+import iveco from '../assets/logoscarros/iveco.webp'
+import man from '../assets/logoscarros/man.webp'
+import mercedes from '../assets/logoscarros/mercedes.webp'
+import volkswagen from '../assets/logoscarros/volkswagen.webp'
+import volvo from '../assets/logoscarros/volvo.webp'
+import yutong from '../assets/logoscarros/yutong.webp'
 
 const logos = [
   { name: 'BMW', src: bmw },
@@ -26,7 +26,7 @@ const carouselLogos = [...logos, ...logos]
 
 <template>
   <section class="logos-carousel" aria-label="Marcas de vehículos compatibles">
-    <img :src="barraVerde" alt="" class="logos-carousel__bar" aria-hidden="true" />
+    <img :src="barraVerde" alt="" class="logos-carousel__bar" aria-hidden="true" loading="lazy" decoding="async" />
     <h2 class="logos-carousel__title">Hemos convertido</h2>
     <div class="logos-carousel__viewport">
       <div class="logos-carousel__track">
@@ -39,6 +39,8 @@ const carouselLogos = [...logos, ...logos]
           <img
             :src="logo.src"
             :alt="index < logos.length ? `Logo ${logo.name}` : ''"
+            loading="lazy"
+            decoding="async"
             class="logos-carousel__image"
             :class="{
               'logos-carousel__image--gray': logo.name === 'Golden Dragon',

@@ -1,21 +1,34 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import ServicioDescripcion from './ServicioDescripcion.vue'
 import ServiciosCta from './ServiciosCta.vue'
-import iconIngenieria from '../assets/icons_servicios/icon1.png'
-import iconConsultoria from '../assets/icons_servicios/icon2.png'
-import iconRepuestos from '../assets/icons_servicios/icon3.png'
-import iconMantenimiento from '../assets/icons_servicios/icon4.png'
-import iconCapacitacion from '../assets/icons_servicios/icon5.png'
-import iconCertificacion from '../assets/icons_servicios/icon6.png'
+import { getHome, getStrapiAssetUrl } from '../services/strapi.ts'
+import iconIngenieria from '../assets/icons_servicios/icon1.webp'
+import iconConsultoria from '../assets/icons_servicios/icon2.webp'
+import iconRepuestos from '../assets/icons_servicios/icon3.webp'
+import iconMantenimiento from '../assets/icons_servicios/icon4.webp'
+import iconCapacitacion from '../assets/icons_servicios/icon5.webp'
+import iconCertificacion from '../assets/icons_servicios/icon6.webp'
 
 const servicios = [
-  { titulo: 'Consultoría y Diagnóstico Técnico', icono: iconConsultoria, clase: 'servicios-page__card--consultoria' },
-  { titulo: 'Ingeniería de Transformación Energética', icono: iconIngenieria, clase: 'servicios-page__card--ingenieria' },
-  { titulo: 'Mantenimiento y Soporte Post Venta', icono: iconMantenimiento, clase: 'servicios-page__card--mantenimiento' },
-  { titulo: 'Venta de Repuestos Especializados', icono: iconRepuestos, clase: 'servicios-page__card--repuestos' },
-  { titulo: 'Certificación y Gestión Legal', icono: iconCertificacion, clase: 'servicios-page__card--certificacion' },
-  { titulo: 'Capacitación Operativa', icono: iconCapacitacion, clase: 'servicios-page__card--capacitacion' },
+  { titulo: 'Consultoría y Diagnóstico Técnico', icono: iconConsultoria, clase: 'servicios-page__card--consultoria', ancla: 'servicio-1' },
+  { titulo: 'Ingeniería de Transformación Energética', icono: iconIngenieria, clase: 'servicios-page__card--ingenieria', ancla: 'servicio-2' },
+  { titulo: 'Mantenimiento y Soporte Post Venta', icono: iconMantenimiento, clase: 'servicios-page__card--mantenimiento', ancla: 'servicio-3' },
+  { titulo: 'Venta de Repuestos Especializados', icono: iconRepuestos, clase: 'servicios-page__card--repuestos', ancla: 'servicio-4' },
+  { titulo: 'Certificación y Gestión Legal', icono: iconCertificacion, clase: 'servicios-page__card--certificacion', ancla: 'servicio-5' },
+  { titulo: 'Capacitación Operativa', icono: iconCapacitacion, clase: 'servicios-page__card--capacitacion', ancla: 'servicio-6' },
 ]
+
+const imagenesServicios = ref<string[]>([])
+
+onMounted(async () => {
+  try {
+    const home = await getHome('u98yq7h5klflg2qhaiyv6j8y')
+    imagenesServicios.value = home.servicios.map(getStrapiAssetUrl)
+  } catch (error) {
+    console.error(error)
+  }
+})
 </script>
 
 <template>
@@ -30,10 +43,17 @@ const servicios = [
       </div>
 
       <div class="servicios-page__grid">
-        <article v-for="servicio in servicios" :key="servicio.titulo" class="servicios-page__card" :class="servicio.clase">
+        <a
+          v-for="(servicio, index) in servicios"
+          :key="servicio.titulo"
+          class="servicios-page__card"
+          :class="servicio.clase"
+          :href="`#${servicio.ancla}`"
+          :style="imagenesServicios[index] ? { backgroundImage: `url(${imagenesServicios[index]})` } : undefined"
+        >
           <span class="servicios-page__icono" aria-hidden="true"><img :src="servicio.icono" alt="" /></span>
           <h2>{{ servicio.titulo }}</h2>
-        </article>
+        </a>
       </div>
     </div>
   </section>
@@ -54,20 +74,12 @@ const servicios = [
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, rgb(4 20 28 / 86%) 0%, rgb(30 67 23 / 82%) 48%, rgb(87 133 31 / 88%) 100%),
-    linear-gradient(145deg, #0b2735, #537d20 72%);
-}
-
-.servicios-page__background::before {
-  position: absolute;
-  right: 33.6%;
-  bottom: -14.4%;
-  width: 44rem;
-  height: 44rem;
-  border: 0.12rem solid rgb(157 205 67 / 25%);
-  border-radius: 50%;
-  content: '';
-  transform: rotate(-18deg);
+    linear-gradient(90deg, rgb(3 20 28 / 91%) 0%, rgb(30 69 23 / 86%) 50%, rgb(94 141 37 / 94%) 100%),
+    url('../assets/Fondoservice.webp');
+  background-color: #5e8d25;
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .servicios-page__content {
@@ -115,7 +127,7 @@ const servicios = [
   transition: background-color 180ms ease, transform 180ms ease;
 }
 
-.servicios-page__cta:hover { background: var(--color-1); transform: translateY(-0.15rem); }
+.servicios-page__cta:hover { background: var(--color-2); transform: translateY(-0.15rem); }
 .servicios-page__cta span { font-size: 1.65em; line-height: 0.6; }
 
 .servicios-page__grid {
@@ -141,8 +153,23 @@ const servicios = [
   padding: clamp(0.8rem, 1.28vw, 1.28rem);
   align-items: flex-end;
   overflow: hidden;
-  border-radius: 0.96rem;
+  border-radius: 1.5rem;
   background: linear-gradient(145deg, #4e6b33, #182718);
+  box-shadow: 0 0.7rem 1.6rem rgb(0 0 0 / 32%);
+  color: var(--blanco);
+  cursor: pointer;
+  text-decoration: none;
+  transition: box-shadow 180ms ease, filter 180ms ease;
+}
+
+.servicios-page__card:hover {
+  box-shadow: 0 1rem 2rem rgb(0 0 0 / 44%);
+  filter: brightness(1.08);
+}
+
+.servicios-page__card:focus-visible {
+  outline: 0.18rem solid #d7f59f;
+  outline-offset: 0.18rem;
 }
 
 .servicios-page__card::before {
@@ -158,6 +185,15 @@ const servicios = [
 .servicios-page__card--repuestos { background: linear-gradient(135deg, #bd8830, #5a431a); }
 .servicios-page__card--certificacion { background: linear-gradient(135deg, #4d87ab, #1c4050); }
 .servicios-page__card--capacitacion { background: linear-gradient(135deg, #536c67, #1b2929); }
+
+/* Los gradientes de respaldo no deben sobrescribir el encuadre de las fotos. */
+.servicios-page__card {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.servicios-page__card--repuestos { background-size: cover; }
 
 .servicios-page__icono {
   position: absolute;
@@ -194,15 +230,61 @@ const servicios = [
 
   .servicios-page__content {
     grid-template-columns: 1fr;
-    padding-inline: 1.6rem;
+    gap: 3rem;
+    padding: 3.5rem clamp(1.5rem, 5vw, 3rem);
+  }
+
+  .servicios-page__intro {
+    max-width: 46rem;
+    justify-self: center;
+    text-align: center;
+  }
+
+  .servicios-page__intro h1,
+  .servicios-page__intro p {
+    max-width: none;
+  }
+
+  .servicios-page__grid {
+    width: min(100%, 48rem);
+    gap: 1.25rem;
+    transform: none;
+  }
+
+  .servicios-page__card,
+  .servicios-page__card--repuestos {
+    background-position: center;
+    background-size: cover;
+    box-shadow: 0 0.55rem 1.2rem rgb(0 0 0 / 28%);
+  }
+
+  .servicios-page__card:nth-child(odd) {
+    transform: none;
   }
 }
 
 @media (max-width: 620px) {
-  .servicios-page__content { padding: 2.4rem 0.8rem; }
-  .servicios-page__grid { width: 100%; grid-template-columns: 1fr; }
-  .servicios-page__grid { transform: none; }
-  .servicios-page__card { aspect-ratio: 1.35 / 1; }
-  .servicios-page__card:nth-child(odd) { transform: none; }
+  .servicios-page__content {
+    gap: 2.25rem;
+    padding: 2.75rem 1rem;
+  }
+
+  .servicios-page__grid {
+    width: 100%;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .servicios-page__card {
+    width: 100%;
+    aspect-ratio: 1.45 / 1;
+    border-radius: 1.1rem;
+    box-shadow: 0 0.4rem 0.9rem rgb(0 0 0 / 26%);
+  }
+
+  .servicios-page__icono {
+    top: 0.75rem;
+    right: 0.75rem;
+  }
 }
 </style>

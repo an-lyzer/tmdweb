@@ -1,16 +1,29 @@
 <script setup lang="ts">
-import montanasVerdes from '../assets/logoscarros/montañasverdes.png'
+import { onMounted, ref } from 'vue'
+import { getHome, getStrapiAssetUrl } from '../services/strapi.ts'
+import montanasVerdes from '../assets/logoscarros/monta\u00f1asverdes.webp'
 
 const pasos = [
-  { numero: '1', titulo: 'Análisis de retorno de inversión', imagen: '' },
-  { numero: '2', titulo: 'Estudio de Viabilidad', imagen: '' },
-  { numero: '3', titulo: 'Asesoría personalizada', imagen: '' },
+  { numero: '1', titulo: 'Análisis de retorno de inversión' },
+  { numero: '2', titulo: 'Estudio de Viabilidad' },
+  { numero: '3', titulo: 'Asesoría personalizada' },
 ]
+
+const imagenesFlujo = ref<string[]>([])
+
+onMounted(async () => {
+  try {
+    const home = await getHome('u98yq7h5klflg2qhaiyv6j8y')
+    imagenesFlujo.value = home.flujo.map(getStrapiAssetUrl)
+  } catch (error) {
+    console.error(error)
+  }
+})
 </script>
 
 <template>
   <section class="proceso" aria-labelledby="proceso-titulo">
-    <img :src="montanasVerdes" alt="" class="proceso__montanas" aria-hidden="true" />
+    <img :src="montanasVerdes" alt="" class="proceso__montanas" aria-hidden="true" loading="lazy" decoding="async" />
 
     <header class="proceso__header">
       <h2 id="proceso-titulo">Convertimos tu unidad de forma rápida y segura</h2>
@@ -18,11 +31,10 @@ const pasos = [
     </header>
 
     <div class="proceso__pasos">
-      <article v-for="paso in pasos" :key="paso.numero" class="proceso__paso">
+      <article v-for="(paso, index) in pasos" :key="paso.numero" class="proceso__paso">
         <span class="proceso__numero" aria-hidden="true">{{ paso.numero }}</span>
         <div class="proceso__imagen">
-          <img v-if="paso.imagen" :src="paso.imagen" :alt="paso.titulo" />
-          <span v-else aria-hidden="true">Imagen próximamente</span>
+          <img v-if="imagenesFlujo[index]" :src="imagenesFlujo[index]" :alt="paso.titulo" loading="lazy" decoding="async" />
           <h3>{{ paso.titulo }}</h3>
         </div>
       </article>
@@ -134,9 +146,10 @@ const pasos = [
 .proceso__imagen h3 {
   position: absolute;
   z-index: 1;
-  right: 1rem;
-  bottom: 1rem;
-  left: 1rem;
+  inset: 0;
+  display: grid;
+  padding: 1rem;
+  place-items: center;
   margin: 0;
   color: var(--blanco);
   font-size: clamp(1.25rem, 2.4vw, 2.55rem);

@@ -1,13 +1,45 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import phone from '../assets/phone.png'
-import mail from '../assets/mail.png'
-import gps from '../assets/gps.png'
+import { crearFormularioContacto } from '../services/strapi.ts'
+import SolicitudConfirmacion from './SolicitudConfirmacion.vue'
+import phone from '../assets/phone.webp'
+import mail from '../assets/mail.webp'
+import gps from '../assets/gps.webp'
 
 const enviado = ref(false)
+const cargando = ref(false)
+const errorEnvio = ref('')
 
-function enviarFormulario() {
-  enviado.value = true
+async function enviarFormulario(event: SubmitEvent) {
+  const formulario = event.currentTarget
+  if (!(formulario instanceof HTMLFormElement)) return
+
+  enviado.value = false
+  errorEnvio.value = ''
+
+  const datos = new FormData(formulario)
+  const telefono = String(datos.get('telefono') ?? '').trim()
+
+  if (telefono.replace(/\D/g, '').length < 9) {
+    errorEnvio.value = 'El número de teléfono debe tener al menos 9 dígitos.'
+    return
+  }
+
+  cargando.value = true
+  try {
+    await crearFormularioContacto({
+      Nombre: String(datos.get('nombre') ?? '').trim(),
+      correo: String(datos.get('correo') ?? '').trim(),
+      Telefono: telefono,
+      Numeroplaca: String(datos.get('placa') ?? '').trim() || null,
+    })
+    formulario.reset()
+    enviado.value = true
+  } catch (error) {
+    errorEnvio.value = error instanceof Error ? error.message : 'No se pudo enviar la solicitud.'
+  } finally {
+    cargando.value = false
+  }
 }
 </script>
 
@@ -38,33 +70,32 @@ function enviarFormulario() {
         </label>
         <label>
           <span>Teléfono*</span>
-          <input name="telefono" type="tel" required autocomplete="tel" placeholder=" " />
+          <input name="telefono" type="tel" required autocomplete="tel" inputmode="numeric" minlength="9" placeholder=" " />
         </label>
         <label>
           <span>Número de placa</span>
           <input name="placa" type="text" autocomplete="off" placeholder=" " />
         </label>
-        <button type="submit">Enviar</button>
-        <p v-if="enviado" class="formcontacto__mensaje" role="status">
-          Recibimos tu solicitud. Pronto nos comunicaremos contigo.
-        </p>
+        <button type="submit" :disabled="cargando">{{ cargando ? 'Enviando...' : 'Enviar' }}</button>
+        <p v-if="errorEnvio" class="formcontacto__mensaje formcontacto__mensaje--error" role="alert">{{ errorEnvio }}</p>
       </form>
     </div>
 
     <div class="formcontacto__datos">
-      <a href="tel:+51923573697" class="formcontacto__dato">
+      <a href="tel:+51934215417" class="formcontacto__dato">
         <img :src="phone" alt="" />
-        <span><strong>Llamar a</strong>+51 923 573 697</span>
+        <span><strong>Llamar a</strong>+51 934 215 417</span>
       </a>
-      <a href="mailto:ventas@tmd.com" class="formcontacto__dato">
+      <!-- <a href="mailto:ventas@tmd.com" class="formcontacto__dato">
         <img :src="mail" alt="" />
         <span><strong>Email</strong>ventas@tmd.com</span>
-      </a>
+      </a> -->
       <address class="formcontacto__dato">
         <img :src="gps" alt="" />
         <span><strong>Lugar</strong>Av. Evitamiento 1980 – Ate – Lima</span>
       </address>
     </div>
+    <SolicitudConfirmacion v-if="enviado" @cerrar="enviado = false" />
   </section>
 </template>
 
@@ -178,6 +209,13 @@ function enviarFormulario() {
   margin: 0;
   color: #537c21;
   font-size: 0.95rem;
+}
+
+.formcontacto__mensaje--error { color: #b42318; }
+
+.formcontacto__form button:disabled {
+  cursor: wait;
+  opacity: 0.7;
 }
 
 .formcontacto__datos {

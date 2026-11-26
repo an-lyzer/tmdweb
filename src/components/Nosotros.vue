@@ -1,6 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import ServiciosCta from './ServiciosCta.vue'
+import { getContactpage, getNosotrosHero, getStrapiAssetUrl } from '../services/strapi.ts'
+import busMecanico from '../assets/Bus_mecanico.webp'
+import atrasBus from '../assets/atras_bus.webp'
+import fondoService from '../assets/Fondoservice.webp'
+import buses from '../assets/Buses.webp'
+const motor = new URL('../assets/motor1.webp', import.meta.url).href
 const razones = [
   {
     titulo: 'Tecnología Certificada',
@@ -31,30 +37,53 @@ const seccionesInstitucionales = [
   {
     id: 'vision',
     titulo: 'Nuestra Visión',
-    descripcion: 'Ser el aliado estratégico de referencia para las empresas que buscan una movilidad más eficiente, segura y sostenible.',
+    descripcion: 'Consolidarnos como referentes en el Perú y la región en soluciones integrales para transformar la matriz energética del sector transporte, liderando su transición hacia un modelo más eficiente, competitivo y sostenible.',
     puntos: [
       'Innovación continua',
       'Crecimiento sostenible',
       'Liderazgo técnico',
       'Relaciones de largo plazo',
     ],
+    imagenPrincipal: fondoService,
+    imagenDetalle: buses,
+    altPrincipal: 'Transporte pesado operando con energía GNV',
+    altDetalle: 'Bus y camión de TMD Gas en operación',
     invertida: true,
   },
   {
     id: 'mision',
     titulo: 'Nuestra Misión',
-    descripcion: 'Ofrecer soluciones integrales de conversión a GNV que impulsen el desempeño de cada flota con calidad, seguridad y respaldo técnico.',
+    descripcion: 'Ser el aliado estratégico del sector transporte, liderando su transformación hacia operaciones más eficientes, rentables y sostenibles, mediante soluciones integrales de conversión de motores diésel a GNV, tecnología especializada y servicios de alta calidad que generen valor y competitividad de largo plazo.',
     puntos: [
       'Soluciones a medida',
       'Seguridad en cada proceso',
       'Servicio especializado',
       'Valor para nuestros clientes',
     ],
+    imagenPrincipal: atrasBus,
+    imagenDetalle: motor,
+    altPrincipal: 'Vista posterior de un bus',
+    altDetalle: 'Motor preparado para una solución de conversión a GNV',
     invertida: false,
   },
 ]
 
 const razonActiva = ref<number | null>(0)
+const carrosUrl = ref('')
+const marcasNosotros = ref<string[]>([])
+
+onMounted(async () => {
+  try {
+    const [nosotros, contacto] = await Promise.all([
+      getNosotrosHero('pysenfhki14xofr7cvz8m0gk'),
+      getContactpage(),
+    ])
+    if (contacto.fondoCarroRojo) carrosUrl.value = getStrapiAssetUrl(contacto.fondoCarroRojo)
+    marcasNosotros.value = nosotros.marcas.map(getStrapiAssetUrl)
+  } catch (error) {
+    console.error(error)
+  }
+})
 
 function alternarRazon(indice: number) {
   razonActiva.value = razonActiva.value === indice ? null : indice
@@ -75,12 +104,12 @@ function alternarRazon(indice: number) {
       </div>
 
       <h6 class="nosotros__mensaje">
-        Trabajamos junto a entidades y empresas líderes para ofrecer soluciones confiables, seguras y de alta calidad en cada proyecto.
+        Trabajamos junto a entidades y empresas <br> líderes para ofrecer soluciones confiables,<br> seguras y de alta calidad en cada proyecto.
       </h6>
 
       <div class="nosotros__accion">
-        <div class="nosotros__imagen" role="img" aria-label="Imagen de flota, pendiente de proporcionar">
-          <span>Imagen próximamente</span>
+        <div class="nosotros__imagen" role="img" aria-label="Flota de vehículos TMD Gas">
+          <img v-if="carrosUrl" :src="carrosUrl" alt="Flota de vehículos TMD Gas" />
         </div>
         <RouterLink class="nosotros__boton" to="/contacto">Solicita información</RouterLink>
       </div>
@@ -88,27 +117,32 @@ function alternarRazon(indice: number) {
 
     <div class="nosotros__marcas">
       <h3>Marcas que confían en nosotros</h3>
-      <div class="nosotros__logos" aria-label="Logos de clientes pendientes de proporcionar">
-        <span v-for="logo in 5" :key="logo">Logo próximamente</span>
+      <div class="nosotros__logos" aria-label="Marcas que confían en nosotros">
+        <template v-if="marcasNosotros.length">
+          <img v-for="(marca, index) in marcasNosotros" :key="marca" :src="marca" :alt="`Marca asociada ${index + 1}`" />
+        </template>
+        <template v-else>
+          <span v-for="logo in 5" :key="logo">Logo próximamente</span>
+        </template>
       </div>
     </div>
   </section>
 
   <section class="porque-nosotros" aria-labelledby="porque-nosotros-titulo">
     <div class="porque-nosotros__visual">
-      <div class="porque-nosotros__imagen" role="img" aria-label="Imagen de mantenimiento de buses, pendiente de proporcionar">
-        <span>Imagen próximamente</span>
+      <div class="porque-nosotros__imagen">
+        <img :src="busMecanico" alt="Mecánico trabajando en un bus" />
       </div>
       <span class="porque-nosotros__etiqueta">Nosotros</span>
     </div>
 
     <div class="porque-nosotros__contenido">
       <div class="porque-nosotros__encabezado">
+        <h6>¿Porque nosotros?</h6>
         <h1 id="porque-nosotros-titulo">
           <span class="porque-nosotros__linea porque-nosotros__linea--confianza">Confianza en</span>
           <span class="porque-nosotros__linea">Cada conversión<span class="porque-nosotros__punto">.</span></span>
         </h1>
-        <h6>¿Porque nosotros?</h6>
       </div>
 
       <div class="porque-nosotros__acordeon">
@@ -134,13 +168,11 @@ function alternarRazon(indice: number) {
     </div>
   </section>
 
-  <section class="historia" aria-labelledby="historia-titulo">
+  <!-- <section class="historia" aria-labelledby="historia-titulo">
     <div class="historia__imagenes" aria-label="Imágenes de nuestra historia, pendientes de proporcionar">
       <div class="historia__imagen historia__imagen--principal" role="img">
-        <span>Imagen principal próximamente</span>
       </div>
       <div class="historia__imagen historia__imagen--detalle" role="img">
-        <span>Imagen secundaria próximamente</span>
       </div>
     </div>
 
@@ -159,7 +191,7 @@ function alternarRazon(indice: number) {
         </li>
       </ul>
     </div>
-  </section>
+  </section> -->
 
   <section
     v-for="seccion in seccionesInstitucionales"
@@ -168,12 +200,12 @@ function alternarRazon(indice: number) {
     :class="{ 'historia--invertida': seccion.invertida }"
     :aria-labelledby="`${seccion.id}-titulo`"
   >
-    <div class="historia__imagenes" :aria-label="`Imágenes de ${seccion.titulo}, pendientes de proporcionar`">
-      <div class="historia__imagen historia__imagen--principal" role="img">
-        <span>Imagen principal próximamente</span>
+    <div class="historia__imagenes" :aria-label="`Imágenes de ${seccion.titulo}`">
+      <div class="historia__imagen historia__imagen--principal">
+        <img :src="seccion.imagenPrincipal" :alt="seccion.altPrincipal" />
       </div>
-      <div class="historia__imagen historia__imagen--detalle" role="img">
-        <span>Imagen secundaria próximamente</span>
+      <div class="historia__imagen historia__imagen--detalle">
+        <img :src="seccion.imagenDetalle" :alt="seccion.altDetalle" />
       </div>
     </div>
 
@@ -218,7 +250,7 @@ function alternarRazon(indice: number) {
   display: flex;
   gap: 0.7rem;
   align-items: center;
-  margin-bottom: clamp(1.5rem, 4vw, 4rem);
+  margin-bottom: 1.5rem;
   color: #969894;
   font-size: var(--text-h5);
   font-weight: 600;
@@ -229,8 +261,13 @@ function alternarRazon(indice: number) {
   fill: var(--color-1);
 }
 
+.nosotros__presentacion {
+  align-self: end;
+  margin-bottom: 3.5rem;
+}
+
 .nosotros h1 {
-  font-size: var(--text-h1);
+  font-size: 4rem;
   font-weight: 700;
   line-height: 1.08;
   letter-spacing: -0.05em;
@@ -243,13 +280,14 @@ function alternarRazon(indice: number) {
   color: #555752;
   font-weight: 600;
   line-height: 1.45;
+  transform: translateY(-7.5rem);
 }
 
 .nosotros__accion {
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  align-items: flex-end;
+  align-items: center;
 }
 
 .nosotros__imagen {
@@ -264,18 +302,27 @@ function alternarRazon(indice: number) {
   font-size: 0.9rem;
 }
 
+.nosotros__imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .nosotros__boton {
-  display: grid;
+  display: flex;
   width: min(100%, 16rem);
   min-height: 3.75rem;
   padding: 0.75rem 1.5rem;
-  place-items: center;
+  align-items: center;
+  justify-content: center;
   border-radius: 0.9rem;
   background: var(--negro);
   color: var(--blanco);
   font-size: var(--text-h5);
   font-weight: 600;
+  line-height: 1.2;
   text-decoration: none;
+  text-align: center;
   transition: background-color 180ms ease, transform 180ms ease;
 }
 
@@ -298,10 +345,11 @@ function alternarRazon(indice: number) {
 }
 
 .nosotros__logos {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
   align-items: center;
+  justify-content: flex-end;
 }
 
 .nosotros__logos span {
@@ -316,6 +364,15 @@ function alternarRazon(indice: number) {
   text-align: center;
 }
 
+.nosotros__logos img {
+  display: block;
+  width: auto;
+  height: 2.25rem;
+  max-height: 2.25rem;
+  max-width: 50%;
+  object-fit: contain;
+}
+
 .porque-nosotros {
   display: grid;
   max-width: 128rem;
@@ -328,6 +385,7 @@ function alternarRazon(indice: number) {
 }
 
 .porque-nosotros__imagen {
+  position: relative;
   display: grid;
   width: 100%;
   min-height: 0;
@@ -338,6 +396,15 @@ function alternarRazon(indice: number) {
   background: linear-gradient(135deg, #617069, #d8ddd4);
   color: rgb(255 255 255 / 74%);
   font-size: 0.9rem;
+}
+
+.porque-nosotros__imagen img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 90%;
 }
 
 .porque-nosotros__visual {
@@ -476,7 +543,7 @@ function alternarRazon(indice: number) {
   max-width: 128rem;
   margin: 0 auto;
   padding: clamp(1.792rem, 3.136vw, 3.584rem) clamp(2rem, 5.5vw, 10rem);
-  grid-template-columns: minmax(25rem, 1fr) minmax(28rem, 1.05fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
   gap: clamp(3rem, 8vw, 10rem);
   align-items: center;
   color: var(--negro);
@@ -484,17 +551,44 @@ function alternarRazon(indice: number) {
 
 .historia__imagenes {
   position: relative;
-  min-height: 32rem;
+  width: 100%;
+  min-height: clamp(24rem, 33vw, 32rem);
 }
 
 .historia__imagen {
   display: grid;
+  overflow: hidden;
   place-items: center;
   border-radius: 1.75rem;
   background: #d4d4d4;
   color: rgb(48 51 46 / 55%);
   font-size: 0.85rem;
   text-align: center;
+}
+
+.historia__imagen img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.historia--invertida .historia__imagen--principal img {
+  object-position: center;
+}
+
+.historia--invertida .historia__imagen--detalle img {
+  object-position: center;
+}
+
+.historia:not(.historia--invertida) .historia__imagen--principal img {
+  position: absolute;
+  inset: 0;
+  object-position: center 70%;
+}
+
+.historia:not(.historia--invertida) .historia__imagen--detalle img {
+  object-position: 42% center;
 }
 
 .historia__imagen--principal {
@@ -514,6 +608,7 @@ function alternarRazon(indice: number) {
 
 .historia__contenido {
   display: grid;
+  min-width: 0;
   gap: clamp(1.5rem, 3vw, 3rem);
   align-content: center;
 }
@@ -521,18 +616,21 @@ function alternarRazon(indice: number) {
 .historia__contenido h2 {
   font-weight: 700;
   line-height: 1.1;
+  overflow-wrap: break-word;
 }
 
 .historia__contenido p {
   max-width: 41rem;
+  margin: 0;
   font-size: var(--text-h6);
   line-height: 1.4;
+  overflow-wrap: break-word;
 }
 
 .historia__contenido ul {
   display: grid;
   gap: 1.5rem;
-  margin: clamp(1rem, 2vw, 2rem) 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -540,14 +638,16 @@ function alternarRazon(indice: number) {
 .historia__contenido li {
   display: flex;
   gap: 1rem;
-  align-items: center;
+  align-items: flex-start;
   font-size: var(--text-h5);
   font-weight: 500;
+  line-height: 1.25;
 }
 
 .historia__contenido li svg {
   width: 2rem;
   flex: 0 0 auto;
+  margin-top: 0.15em;
   fill: none;
   stroke: var(--color-2);
   stroke-linecap: round;
@@ -564,53 +664,138 @@ function alternarRazon(indice: number) {
 @media (max-width: 1100px) {
   .nosotros {
     height: auto;
-    min-height: 40.3125rem;
+    min-height: 0;
+    overflow: visible;
   }
 
-  .nosotros__contenido { grid-template-columns: 1fr 1fr; }
-  .nosotros__presentacion { grid-row: span 2; }
+  .nosotros__contenido {
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.85fr);
+    gap: 2.5rem;
+  }
+
+  .nosotros__presentacion {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: end;
+    margin-bottom: 0;
+  }
+
+  .nosotros__mensaje {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: start;
+    transform: none;
+  }
+
+  .nosotros__accion {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
   .nosotros__accion { align-items: stretch; }
-  .nosotros__boton { align-self: flex-end; }
+  .nosotros__boton { align-self: center; }
 
   .porque-nosotros {
     grid-template-columns: 1fr;
   }
 
   .porque-nosotros__imagen {
-    min-height: 28rem;
+    min-height: 0;
+    aspect-ratio: 1.32 / 1;
   }
 
   .historia {
     grid-template-columns: 1fr;
+    gap: clamp(2.5rem, 5vw, 4rem);
   }
 
   .historia__imagenes {
-    min-height: 27.2rem;
+    min-height: clamp(21rem, 62vw, 28rem);
+    max-width: 48rem;
   }
 }
 
 @media (max-width: 700px) {
   .nosotros {
-    padding: 3rem 1.5rem;
-    gap: 3rem;
+    padding: 2.5rem 1.25rem;
+    gap: 2.5rem;
   }
 
   .nosotros__contenido,
-  .nosotros__marcas { grid-template-columns: 1fr; }
-  .nosotros__presentacion { grid-row: auto; }
+  .nosotros__marcas {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .nosotros__presentacion,
+  .nosotros__mensaje,
+  .nosotros__accion {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .nosotros__presentacion { align-self: start; }
+  .nosotros__eyebrow { margin-bottom: 1rem; }
   .nosotros h1 { font-size: clamp(2.6rem, 12vw, 4rem); }
-  .nosotros__accion,
-  .nosotros__boton { align-items: stretch; width: 100%; }
+  .nosotros__mensaje { max-width: none; line-height: 1.4; }
+  .nosotros__mensaje br { display: none; }
+  .nosotros__accion { align-items: stretch; width: 100%; }
+  .nosotros__boton {
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+  }
   .nosotros__imagen { height: 16rem; }
-  .nosotros__logos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .nosotros__marcas h3 {
+    max-width: none;
+    text-align: center;
+  }
+
+  .nosotros__logos {
+    gap: 1.25rem;
+    justify-content: center;
+  }
+
+  .nosotros__logos img {
+    height: 1.8rem;
+    max-height: 1.8rem;
+    max-width: 8rem;
+  }
 
   .porque-nosotros {
-    padding: 4rem 1.5rem;
-    gap: 3rem;
+    padding: 3rem 1.25rem;
+    gap: 2.5rem;
   }
 
   .porque-nosotros__imagen {
-    min-height: 20rem;
+    min-height: 0;
+  }
+
+  .porque-nosotros__visual { gap: 1.25rem; }
+
+  .porque-nosotros__contenido { gap: 2.25rem; }
+
+  .porque-nosotros__encabezado {
+    display: block;
+  }
+
+  .porque-nosotros__encabezado h6 {
+    display: block;
+    margin-bottom: 0.75rem;
+    white-space: normal;
+  }
+
+  .porque-nosotros__encabezado h1 {
+    display: block;
+    font-size: clamp(2.25rem, 10vw, var(--text-h1));
+  }
+
+  .porque-nosotros__linea,
+  .porque-nosotros__linea--confianza,
+  .porque-nosotros__linea:not(.porque-nosotros__linea--confianza) {
+    display: block;
+    margin: 0;
   }
 
   .porque-nosotros__boton-acordeon {
@@ -618,12 +803,12 @@ function alternarRazon(indice: number) {
   }
 
   .historia {
-    padding: 4rem 1.5rem;
-    gap: 3rem;
+    padding: 2.75rem 1.5rem;
+    gap: 2.5rem;
   }
 
   .historia__imagenes {
-    min-height: 20rem;
+    min-height: clamp(17rem, 72vw, 22rem);
   }
 
   .historia__imagen--principal {
@@ -637,6 +822,14 @@ function alternarRazon(indice: number) {
 
   .historia__contenido li {
     font-size: var(--text-p);
+  }
+
+  .historia__contenido h2 {
+    font-size: clamp(2rem, 8vw, var(--text-h2));
+  }
+
+  .historia__contenido p {
+    font-size: clamp(1rem, 4.5vw, var(--text-h6));
   }
 }
 </style>

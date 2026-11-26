@@ -1,36 +1,44 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { getHome, getStrapiAssetUrl } from '../services/strapi.ts'
+
 const servicios = [
   {
     titulo: 'Consultoría y Diagnóstico Técnico',
     descripcion: 'Evaluamos tu flota y determinamos la mejor solución para optimizar costos y rendimiento con tecnología GNV.',
-    imagen: '',
   },
   {
     titulo: 'Ingeniería de Transformación Energética',
     descripcion: 'Diseñamos e implementamos sistemas de conversión a GNV con altos estándares de seguridad y rendimiento.',
-    imagen: '',
   },
   {
     titulo: 'Mantenimiento y Soporte Post Venta',
     descripcion: 'Acompañamiento técnico integral para asegurar la operación continua de tu flota.',
-    imagen: '',
   },
   {
     titulo: 'Venta de Repuestos Especializados',
     descripcion: 'Componentes originales y de alta calidad para máxima durabilidad y rendimiento.',
-    imagen: '',
   },
   {
     titulo: 'Certificación y Gestión Legal',
     descripcion: 'Gestionamos toda la documentación y certificaciones requeridas para circular.',
-    imagen: '',
   },
   {
     titulo: 'Capacitación Operativa',
     descripcion: 'Capacitamos el personal y monitoreamos el desempeño de la flota en tiempo real.',
-    imagen: '',
   },
 ]
+
+const imagenesServicios = ref<string[]>([])
+
+onMounted(async () => {
+  try {
+    const home = await getHome('u98yq7h5klflg2qhaiyv6j8y')
+    imagenesServicios.value = home.servicios.map(getStrapiAssetUrl)
+  } catch (error) {
+    console.error(error)
+  }
+})
 </script>
 
 <template>
@@ -41,18 +49,17 @@ const servicios = [
     </header>
 
     <div class="servicios__grid">
-      <article v-for="servicio in servicios" :key="servicio.titulo" class="servicios__card">
+      <article v-for="(servicio, index) in servicios" :key="servicio.titulo" class="servicios__card">
         <div class="servicios__media">
-          <img v-if="servicio.imagen" :src="servicio.imagen" :alt="servicio.titulo" />
-          <span v-else aria-hidden="true">Imagen próximamente</span>
+          <img v-if="imagenesServicios[index]" :src="imagenesServicios[index]" :alt="servicio.titulo" loading="lazy" decoding="async" />
         </div>
 
         <div class="servicios__body">
           <h3>{{ servicio.titulo }}</h3>
           <p>{{ servicio.descripcion }}</p>
-          <a class="servicios__link" href="#contacto">
+          <RouterLink class="servicios__link" :to="`/servicios#servicio-${index + 1}`">
             Saber más <span aria-hidden="true">→</span>
-          </a>
+          </RouterLink>
         </div>
       </article>
     </div>
@@ -176,6 +183,15 @@ const servicios = [
   .servicios__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .servicios__media {
+    background: #f3f7ee;
+  }
+
+  .servicios__media img {
+    object-fit: contain;
+    object-position: center;
+  }
 }
 
 @media (max-width: 580px) {
@@ -188,7 +204,13 @@ const servicios = [
   }
 
   .servicios__media {
-    aspect-ratio: 1.45 / 1;
+    min-height: 12rem;
+    aspect-ratio: auto;
+  }
+
+  .servicios__media img {
+    height: auto;
+    max-height: none;
   }
 }
 </style>

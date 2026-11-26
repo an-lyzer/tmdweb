@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import tiktok from '../assets/tiktok.png'
-import facebook from '../assets/facebook.png'
-import linkedin from '../assets/linkedin.png'
+import tiktok from '../assets/tiktok.webp'
+import facebook from '../assets/facebook.webp'
+import linkedin from '../assets/linkedin.webp'
 
 const redes = [
-  { nombre: 'Tiktok', icono: tiktok, clase: 'siguenos__icono--tiktok', enlace: '#' },
-  { nombre: 'Facebook', icono: facebook, clase: 'siguenos__icono--facebook', enlace: '#' },
-  { nombre: 'Linkedin', icono: linkedin, clase: 'siguenos__icono--linkedin', enlace: '#' },
+  { nombre: 'Tiktok', icono: tiktok, clase: 'siguenos__icono--tiktok', enlace: 'https://www.tiktok.com/@tmdgas_peru?is_from_webapp=1&sender_device=pc' },
+  { nombre: 'Facebook', icono: facebook, clase: 'siguenos__icono--facebook', enlace: 'https://www.facebook.com/share/1DjgtZ2Y99/?mibextid=wwXIfr' },
+  { nombre: 'Linkedin', icono: linkedin, clase: 'siguenos__icono--linkedin', enlace: 'https://www.linkedin.com/company/tmd-gas/' },
 ]
 </script>
 
@@ -17,7 +17,7 @@ const redes = [
     <h6 class="siguenos__descripcion">Conoce nuestras últimas novedades, servicios y contenido<br> especializado sobre conversión a GNV.</h6>
 
     <div class="siguenos__redes">
-      <a v-for="red in redes" :key="red.nombre" :href="red.enlace" class="siguenos__tarjeta" :aria-label="`Visitar ${red.nombre}`">
+      <a v-for="red in redes" :key="red.nombre" :href="red.enlace" class="siguenos__tarjeta" :aria-label="`Visitar ${red.nombre}`" target="_blank" rel="noopener noreferrer">
         <span class="siguenos__icono" :class="red.clase"><img :src="red.icono" alt="" /></span>
         <h5>{{ red.nombre }}</h5>
       </a>
@@ -132,14 +132,35 @@ const redes = [
 
 @media (max-width: 620px) {
   .siguenos {
-    padding-inline: 1rem;
+    min-height: 0;
+    padding: 4rem 1rem 4.5rem;
+  }
+
+  .siguenos h2 {
+    margin-top: 1.25rem;
+    font-size: clamp(2rem, 10vw, 3rem);
+  }
+
+  .siguenos__descripcion {
+    margin-top: 1.25rem;
+    font-size: 1rem;
+  }
+
+  .siguenos__descripcion br {
+    display: none;
   }
 
   .siguenos__redes {
     grid-template-columns: 1fr;
+    gap: 4.25rem;
     max-width: 21.25rem;
+    margin-top: 4.75rem;
     margin-right: auto;
     margin-left: auto;
+  }
+
+  .siguenos__tarjeta {
+    width: 100%;
   }
 }
 </style>

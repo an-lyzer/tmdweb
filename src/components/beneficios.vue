@@ -1,10 +1,24 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { getHome, getStrapiAssetUrl } from '../services/strapi.ts'
+
 const beneficios = [
-  { titulo: 'Líderes en el mercado', imagen: '' },
-  { titulo: 'Seguridad y Garantía', imagen: '' },
-  { titulo: 'Soporte Técnico', imagen: '' },
-  { titulo: 'Financiamiento*', imagen: '' },
+  { titulo: 'Líderes en el mercado' },
+  { titulo: 'Seguridad y Garantía' },
+  { titulo: 'Soporte Técnico' },
+  { titulo: 'Financiamiento*' },
 ]
+
+const imagenesBeneficios = ref<string[]>([])
+
+onMounted(async () => {
+  try {
+    const home = await getHome('u98yq7h5klflg2qhaiyv6j8y')
+    imagenesBeneficios.value = home.beneficios.map(getStrapiAssetUrl)
+  } catch (error) {
+    console.error(error)
+  }
+})
 </script>
 
 <template>
@@ -20,10 +34,14 @@ const beneficios = [
 
     <div class="beneficios__content">
       <div class="beneficios__grid">
-        <article v-for="beneficio in beneficios" :key="beneficio.titulo" class="beneficios__card">
+        <article
+          v-for="(beneficio, index) in beneficios"
+          :key="beneficio.titulo"
+          class="beneficios__card"
+          :class="{ 'beneficios__card--tercero': index === 2 }"
+        >
           <div class="beneficios__media">
-            <img v-if="beneficio.imagen" :src="beneficio.imagen" :alt="beneficio.titulo" />
-            <span v-else aria-hidden="true">Imagen próximamente</span>
+            <img v-if="imagenesBeneficios[index]" :src="imagenesBeneficios[index]" :alt="beneficio.titulo" loading="lazy" decoding="async" />
           </div>
           <h3>{{ beneficio.titulo }}</h3>
         </article>
@@ -117,13 +135,26 @@ const beneficios = [
   object-fit: cover;
 }
 
+.beneficios__card--tercero .beneficios__media {
+  background: var(--blanco);
+}
+
+.beneficios__card--tercero .beneficios__media img {
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.35);
+}
+
 .beneficios__card h3 {
   margin: 0;
-  padding: clamp(0.75rem, 1.4vw, 1.25rem);
+  padding: 0.65rem 0.8rem;
   color: #3d5b1e;
-  font-size: clamp(1rem, 1.65vw, 1.65rem);
+  font-size: var(--text-h6);
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 1.1;
+  text-align: left;
+  white-space: nowrap;
+  letter-spacing: -0.035em;
 }
 
 .beneficios__nota {
@@ -145,7 +176,11 @@ const beneficios = [
   }
 
   .beneficios__cta {
-    width: min(100%, 22rem);
+    width: min(100%, 18rem);
+    min-height: 3.75rem;
+    padding: 0.6rem 1.25rem;
+    border-radius: 1rem;
+    font-size: 1.25rem;
   }
 }
 
@@ -158,8 +193,13 @@ const beneficios = [
     grid-template-columns: 1fr;
   }
 
-  .beneficios__card h3 {
-    font-size: 1.2rem;
+  .beneficios__cta {
+    width: min(75%, 13rem);
+    min-height: 3.25rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.85rem;
+    font-size: 1.05rem;
   }
+
 }
 </style>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import fise from '../assets/FISE.png'
-import calidda from '../assets/calidda.png'
+import fise from '../assets/FISE.webp'
+import calidda from '../assets/calidda.webp'
 
 
 </script>
@@ -57,7 +57,7 @@ import calidda from '../assets/calidda.png'
   row-gap: 10rem;
   max-width: 112rem;
   margin: 0 auto;
-  padding: clamp(4rem, 7vw, 7rem) 7rem 0;
+  padding: clamp(4rem, 7vw, 7rem) 7rem;
 }
 
 .financiacion__intro {
@@ -65,7 +65,7 @@ import calidda from '../assets/calidda.png'
 }
 
 .financiacion__intro h2 {
-  max-width: 39rem;
+  max-width: 100%;
   margin: 0;
   font-size: clamp(2.25rem, 4vw, 4.5rem);
   font-weight: 700;
@@ -165,7 +165,6 @@ import calidda from '../assets/calidda.png'
 
 .financiacion__card--tres {
   grid-column: 2;
-  border-radius: 1.5rem 1.5rem 0 0;
 }
 
 @media (max-width: 900px) {
@@ -182,8 +181,14 @@ import calidda from '../assets/calidda.png'
 @media (max-width: 680px) {
   .financiacion__layout {
     grid-template-columns: 1fr;
+    grid-template-rows: auto repeat(3, 1fr);
     row-gap: 2rem;
     padding-inline: 1rem;
+  }
+
+  .financiacion__intro h2 {
+    font-size: clamp(1.9rem, 7.5vw, 2.75rem);
+    line-height: 1.12;
   }
 
   .financiacion__card,
@@ -200,11 +205,28 @@ import calidda from '../assets/calidda.png'
   }
 
   .financiacion__intro > p {
-    margin-top: 2rem;
+    margin-top: 1.5rem;
+  }
+
+  .financiacion__logos img {
+    height: clamp(2.75rem, 13vw, 3.25rem);
+  }
+
+  .financiacion__card {
+    padding: clamp(1.5rem, 6vw, 2rem);
+  }
+
+  .financiacion__numero {
+    width: 2.75rem;
+  }
+
+  .financiacion__card h3 {
+    font-size: clamp(1.65rem, 7vw, 2.25rem);
   }
 
   .financiacion__card p {
     margin-top: 1.25rem;
+    font-size: clamp(1rem, 4.5vw, 1.15rem);
   }
 }
 </style>

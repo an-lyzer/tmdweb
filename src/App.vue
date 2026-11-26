@@ -5,6 +5,7 @@ import Header from './components/Header.vue'
 import HeaderWhite from './components/Header_white.vue'
 import HeaderTop from './components/headertop.vue'
 import Footer from './components/Footer.vue'
+import WhatsAppFloat from './components/WhatsAppFloat.vue'
 
 const route = useRoute()
 const isHome = computed(() => route.name === 'home')
@@ -20,6 +21,7 @@ const isHome = computed(() => route.name === 'home')
     </main>
     <Footer />
   </div>
+  <WhatsAppFloat />
 </template>
 
 <style scoped>
